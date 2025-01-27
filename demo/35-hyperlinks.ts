@@ -1,9 +1,21 @@
 // Example on how to add hyperlinks to websites
-// Import from 'docx' rather than '../build' if you install from npm
+
 import * as fs from "fs";
-import { Document, ExternalHyperlink, Footer, FootnoteReferenceRun, ImageRun, Packer, Paragraph, TextRun } from "../build";
+import { Document, ExternalHyperlink, Footer, FootnoteReferenceRun, ImageRun, Packer, Paragraph, TextRun } from "docx";
 
 const doc = new Document({
+    styles: {
+        default: {
+            hyperlink: {
+                run: {
+                    color: "FF0000",
+                    underline: {
+                        color: "0000FF",
+                    },
+                },
+            },
+        },
+    },
     footnotes: {
         1: {
             children: [

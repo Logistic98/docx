@@ -1,6 +1,5 @@
 import { AttributeData, AttributePayload, Attributes, NextAttributeComponent, XmlComponent } from "@file/xml-components";
-
-import { hpsMeasureValue, PositiveUniversalMeasure } from "@util/values";
+import { PositiveUniversalMeasure, hpsMeasureValue } from "@util/values";
 
 // This represents element type CT_OnOff, which indicate a boolean value.
 //
@@ -55,6 +54,14 @@ export class StringValueElement extends XmlComponent {
     }
 }
 
+export const createStringElement = (name: string, value: string): XmlComponent =>
+    new BuilderElement({
+        name,
+        attributes: {
+            value: { key: "w:val", value },
+        },
+    });
+
 // This represents various number element types.
 export class NumberValueElement extends XmlComponent {
     public constructor(name: string, val: number) {
@@ -82,15 +89,23 @@ export class StringContainer extends XmlComponent {
 }
 
 export class BuilderElement<T extends AttributeData> extends XmlComponent {
-    public constructor(options: {
+    public constructor({
+        name,
+        attributes,
+        children,
+    }: {
         readonly name: string;
         readonly attributes?: AttributePayload<T>;
         readonly children?: readonly XmlComponent[];
     }) {
-        super(options.name);
+        super(name);
 
-        if (options.attributes) {
-            this.root.push(new NextAttributeComponent(options.attributes));
+        if (attributes) {
+            this.root.push(new NextAttributeComponent(attributes));
+        }
+
+        if (children) {
+            this.root.push(...children);
         }
     }
 }

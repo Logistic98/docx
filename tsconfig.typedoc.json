@@ -1,8 +1,11 @@
 {
     "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true
+    },
     "typedocOptions": {
         "out": "docs/api",
-        "exclude": "test",
+        "exclude": ["test", "build"],
         "theme": "default",
         "excludePrivate": true,
         "excludeProtected": true,

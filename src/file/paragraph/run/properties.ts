@@ -1,3 +1,5 @@
+// https://www.ecma-international.org/wp-content/uploads/ECMA-376-1_5th_edition_december_2016.zip page 297, section 17.3.2.21
+
 import { BorderElement, IBorderOptions } from "@file/border";
 import { IShadingAttributesProperties, Shading } from "@file/shading";
 import { ChangeAttributes, IChangedAttributesProperties } from "@file/track-revision/track-revision";
@@ -13,38 +15,66 @@ import { PositiveUniversalMeasure, UniversalMeasure } from "@util/values";
 
 import { EmphasisMark, EmphasisMarkType } from "./emphasis-mark";
 import { CharacterSpacing, Color, Highlight, HighlightComplexScript } from "./formatting";
-import { createLanguageComponent, ILanguageOptions } from "./language";
+import { ILanguageOptions, createLanguageComponent } from "./language";
 import { IFontAttributesProperties, RunFonts } from "./run-fonts";
 import { SubScript, SuperScript } from "./script";
 import { Underline, UnderlineType } from "./underline";
 
-interface IFontOptions {
+type IFontOptions = {
     readonly name: string;
     readonly hint?: string;
-}
+};
 
-export enum TextEffect {
-    BLINK_BACKGROUND = "blinkBackground",
-    LIGHTS = "lights",
-    ANTS_BLACK = "antsBlack",
-    ANTS_RED = "antsRed",
-    SHIMMER = "shimmer",
-    SPARKLE = "sparkle",
-    NONE = "none",
-}
+export const TextEffect = {
+    BLINK_BACKGROUND: "blinkBackground",
+    LIGHTS: "lights",
+    ANTS_BLACK: "antsBlack",
+    ANTS_RED: "antsRed",
+    SHIMMER: "shimmer",
+    SPARKLE: "sparkle",
+    NONE: "none",
+} as const;
 
-export interface IRunStylePropertiesOptions {
+/*
+ * http://officeopenxml.com/WPtextShading.php
+ *
+ * Limit the list of supported highlight colors
+ *
+ * */
+
+export const HighlightColor = {
+    BLACK: "black",
+    BLUE: "blue",
+    CYAN: "cyan",
+    DARK_BLUE: "darkBlue",
+    DARK_CYAN: "darkCyan",
+    DARK_GRAY: "darkGray",
+    DARK_GREEN: "darkGreen",
+    DARK_MAGENTA: "darkMagenta",
+    DARK_RED: "darkRed",
+    DARK_YELLOW: "darkYellow",
+    GREEN: "green",
+    LIGHT_GRAY: "lightGray",
+    MAGENTA: "magenta",
+    NONE: "none",
+    RED: "red",
+    WHITE: "white",
+    YELLOW: "yellow",
+} as const;
+
+export type IRunStylePropertiesOptions = {
+    readonly noProof?: boolean;
     readonly bold?: boolean;
     readonly boldComplexScript?: boolean;
     readonly italics?: boolean;
     readonly italicsComplexScript?: boolean;
     readonly underline?: {
         readonly color?: string;
-        readonly type?: UnderlineType;
+        readonly type?: (typeof UnderlineType)[keyof typeof UnderlineType];
     };
-    readonly effect?: TextEffect;
+    readonly effect?: (typeof TextEffect)[keyof typeof TextEffect];
     readonly emphasisMark?: {
-        readonly type?: EmphasisMarkType;
+        readonly type?: (typeof EmphasisMarkType)[keyof typeof EmphasisMarkType];
     };
     readonly color?: string;
     readonly kern?: number | PositiveUniversalMeasure;
@@ -59,7 +89,7 @@ export interface IRunStylePropertiesOptions {
     readonly subScript?: boolean;
     readonly superScript?: boolean;
     readonly font?: string | IFontOptions | IFontAttributesProperties;
-    readonly highlight?: string;
+    readonly highlight?: (typeof HighlightColor)[keyof typeof HighlightColor];
     readonly highlightComplexScript?: boolean | string;
     readonly characterSpacing?: number;
     readonly shading?: IShadingAttributesProperties;
@@ -73,13 +103,13 @@ export interface IRunStylePropertiesOptions {
     readonly specVanish?: boolean;
     readonly scale?: number;
     readonly math?: boolean;
-}
+};
 
-export interface IRunPropertiesOptions extends IRunStylePropertiesOptions {
+export type IRunPropertiesOptions = {
     readonly style?: string;
-}
+} & IRunStylePropertiesOptions;
 
-export interface IRunPropertiesChangeOptions extends IRunPropertiesOptions, IChangedAttributesProperties {}
+export type IRunPropertiesChangeOptions = {} & IRunPropertiesOptions & IChangedAttributesProperties;
 
 // <xsd:group name="EG_RPrBase">
 //     <xsd:choice>
@@ -124,6 +154,7 @@ export interface IRunPropertiesChangeOptions extends IRunPropertiesOptions, ICha
 //     <xsd:element name="oMath" type="CT_OnOff"/>
 //     </xsd:choice>
 // </xsd:group>
+
 export class RunProperties extends IgnoreIfEmptyXmlComponent {
     public constructor(options?: IRunPropertiesOptions) {
         super("w:rPr");
@@ -131,7 +162,9 @@ export class RunProperties extends IgnoreIfEmptyXmlComponent {
         if (!options) {
             return;
         }
-
+        if (options.noProof !== undefined) {
+            this.push(new OnOffElement("w:noProof", options.noProof));
+        }
         if (options.bold !== undefined) {
             this.push(new OnOffElement("w:b", options.bold));
         }
@@ -256,7 +289,7 @@ export class RunProperties extends IgnoreIfEmptyXmlComponent {
             this.push(new BorderElement("w:bdr", options.border));
         }
 
-        if (options.snapToGrid) {
+        if (options.snapToGrid !== undefined) {
             this.push(new OnOffElement("w:snapToGrid", options.snapToGrid));
         }
 

@@ -1,15 +1,31 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
 import { BorderStyle } from "@file/border";
 import { ShadingType } from "@file/shading";
 
 import { EmphasisMarkType } from "./emphasis-mark";
+import { HighlightColor, TextEffect } from "./properties";
 import { PageNumber, Run } from "./run";
 import { UnderlineType } from "./underline";
-import { TextEffect } from "./properties";
 
 describe("Run", () => {
+    describe("#noProof()", () => {
+        it("turns off spelling and grammar checkers for a run", () => {
+            const run = new Run({
+                noProof: true,
+            });
+            const tree = new Formatter().format(run);
+            expect(tree).to.deep.equal({
+                "w:r": [
+                    {
+                        "w:rPr": [{ "w:noProof": {} }],
+                    },
+                ],
+            });
+        });
+    });
+
     describe("#bold()", () => {
         it("it should add bold to the properties", () => {
             const run = new Run({
@@ -200,18 +216,18 @@ describe("Run", () => {
     describe("#highlight()", () => {
         it("it should add highlight to the properties", () => {
             const run = new Run({
-                highlight: "005599",
+                highlight: HighlightColor.YELLOW,
             });
             const tree = new Formatter().format(run);
             expect(tree).to.deep.equal({
                 "w:r": [
                     {
                         "w:rPr": [
-                            { "w:highlight": { _attr: { "w:val": "005599" } } },
+                            { "w:highlight": { _attr: { "w:val": "yellow" } } },
                             {
                                 "w:highlightCs": {
                                     _attr: {
-                                        "w:val": "005599",
+                                        "w:val": "yellow",
                                     },
                                 },
                             },
@@ -410,6 +426,23 @@ describe("Run", () => {
                 "w:r": [
                     { "w:fldChar": { _attr: { "w:fldCharType": "begin" } } },
                     { "w:instrText": [{ _attr: { "xml:space": "preserve" } }, "PAGE"] },
+                    { "w:fldChar": { _attr: { "w:fldCharType": "separate" } } },
+                    { "w:fldChar": { _attr: { "w:fldCharType": "end" } } },
+                ],
+            });
+        });
+    });
+
+    describe("#section", () => {
+        it("should set the run to the RTL mode", () => {
+            const run = new Run({
+                children: [PageNumber.CURRENT_SECTION],
+            });
+            const tree = new Formatter().format(run);
+            expect(tree).to.deep.equal({
+                "w:r": [
+                    { "w:fldChar": { _attr: { "w:fldCharType": "begin" } } },
+                    { "w:instrText": [{ _attr: { "xml:space": "preserve" } }, "SECTION"] },
                     { "w:fldChar": { _attr: { "w:fldCharType": "separate" } } },
                     { "w:fldChar": { _attr: { "w:fldCharType": "end" } } },
                 ],

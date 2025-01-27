@@ -1,7 +1,7 @@
 // Page numbers
-// Import from 'docx' rather than '../build' if you install from npm
+
 import * as fs from "fs";
-import { AlignmentType, Document, Footer, Header, Packer, PageBreak, PageNumber, Paragraph, TextRun } from "../build";
+import { AlignmentType, Document, Footer, Header, Packer, PageBreak, PageNumber, Paragraph, TextRun } from "docx";
 
 const doc = new Document({
     sections: [
@@ -45,7 +45,7 @@ const doc = new Document({
                             children: [
                                 new TextRun("My Title "),
                                 new TextRun({
-                                    children: ["Footer - Page ", PageNumber.CURRENT],
+                                    children: ["Footer - Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES],
                                 }),
                             ],
                         }),

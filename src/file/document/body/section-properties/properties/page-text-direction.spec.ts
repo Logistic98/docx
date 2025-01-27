@@ -1,6 +1,7 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
+
 import { PageTextDirection, PageTextDirectionType } from "./page-text-direction";
 
 describe("PageTextDirection", () => {

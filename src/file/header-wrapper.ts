@@ -8,16 +8,20 @@ import { Paragraph } from "./paragraph";
 import { Relationships } from "./relationships";
 import { Table } from "./table";
 
-export interface IDocumentHeader {
+export type IDocumentHeader = {
     readonly header: HeaderWrapper;
-    readonly type: HeaderFooterReferenceType;
-}
+    readonly type: (typeof HeaderFooterReferenceType)[keyof typeof HeaderFooterReferenceType];
+};
 
 export class HeaderWrapper implements IViewWrapper {
     private readonly header: Header;
     private readonly relationships: Relationships;
 
-    public constructor(private readonly media: Media, referenceId: number, initContent?: XmlComponent) {
+    public constructor(
+        private readonly media: Media,
+        referenceId: number,
+        initContent?: XmlComponent,
+    ) {
         this.header = new Header(referenceId, initContent);
         this.relationships = new Relationships();
     }

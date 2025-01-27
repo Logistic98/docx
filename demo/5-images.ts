@@ -1,7 +1,8 @@
 // Example of how to add images to the document - You can use Buffers, UInt8Arrays or Base64 strings
-// Import from 'docx' rather than '../build' if you install from npm
+
 import * as fs from "fs";
 import {
+    convertMillimetersToTwip,
     Document,
     HorizontalPositionAlign,
     HorizontalPositionRelativeFrom,
@@ -10,7 +11,7 @@ import {
     Paragraph,
     VerticalPositionAlign,
     VerticalPositionRelativeFrom,
-} from "../build";
+} from "docx";
 
 const doc = new Document({
     sections: [
@@ -20,6 +21,7 @@ const doc = new Document({
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "jpg",
                             data: fs.readFileSync("./demo/images/image1.jpeg"),
                             transformation: {
                                 width: 100,
@@ -36,10 +38,16 @@ const doc = new Document({
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "png",
                             data: fs.readFileSync("./demo/images/dog.png").toString("base64"),
                             transformation: {
                                 width: 100,
                                 height: 100,
+                            },
+                            outline: {
+                                type: "solidFill",
+                                solidFillType: "rgb",
+                                value: "FF0000",
                             },
                         }),
                     ],
@@ -47,6 +55,7 @@ const doc = new Document({
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "jpg",
                             data: fs.readFileSync("./demo/images/cat.jpg"),
                             transformation: {
                                 width: 100,
@@ -55,12 +64,19 @@ const doc = new Document({
                                     vertical: true,
                                 },
                             },
+                            outline: {
+                                type: "solidFill",
+                                solidFillType: "rgb",
+                                value: "0000FF",
+                                width: convertMillimetersToTwip(600),
+                            },
                         }),
                     ],
                 }),
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "bmp",
                             data: fs.readFileSync("./demo/images/parrots.bmp"),
                             transformation: {
                                 width: 150,
@@ -76,6 +92,7 @@ const doc = new Document({
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "gif",
                             data: fs.readFileSync("./demo/images/pizza.gif"),
                             transformation: {
                                 width: 200,
@@ -91,6 +108,7 @@ const doc = new Document({
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "gif",
                             data: fs.readFileSync("./demo/images/pizza.gif"),
                             transformation: {
                                 width: 200,
@@ -112,6 +130,7 @@ const doc = new Document({
                 new Paragraph({
                     children: [
                         new ImageRun({
+                            type: "jpg",
                             data: fs.readFileSync("./demo/images/cat.jpg"),
                             transformation: {
                                 width: 200,
@@ -127,6 +146,22 @@ const doc = new Document({
                                     relative: VerticalPositionRelativeFrom.PAGE,
                                     align: VerticalPositionAlign.BOTTOM,
                                 },
+                            },
+                        }),
+                    ],
+                }),
+                new Paragraph({
+                    children: [
+                        new ImageRun({
+                            type: "svg",
+                            data: fs.readFileSync("./demo/images/linux-svg.svg"),
+                            transformation: {
+                                width: 200,
+                                height: 200,
+                            },
+                            fallback: {
+                                type: "png",
+                                data: fs.readFileSync("./demo/images/linux-png.png"),
                             },
                         }),
                     ],

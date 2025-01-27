@@ -1,12 +1,13 @@
 import { BaseXmlComponent, IContext } from "./base";
-import { IXmlableObject, IXmlAttribute } from "./xmlable-object";
+import { IXmlAttribute, IXmlableObject } from "./xmlable-object";
 
-export type AttributeMap<T> = { readonly [P in keyof T]: string };
+export type AttributeMap<T> = Record<keyof T, string>;
 
-export type AttributeData = { readonly [key: string]: boolean | number | string };
+export type AttributeData = Record<string, boolean | number | string>;
 export type AttributePayload<T> = { readonly [P in keyof T]: { readonly key: string; readonly value: T[P] } };
 
-export abstract class XmlAttributeComponent<T extends object> extends BaseXmlComponent {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export abstract class XmlAttributeComponent<T extends Record<string, any>> extends BaseXmlComponent {
     protected readonly xmlKeys?: AttributeMap<T>;
 
     public constructor(private readonly root: T) {
@@ -14,9 +15,8 @@ export abstract class XmlAttributeComponent<T extends object> extends BaseXmlCom
     }
 
     public prepForXml(_: IContext): IXmlableObject {
-        const attrs = {};
-        Object.keys(this.root).forEach((key) => {
-            const value = this.root[key];
+        const attrs: Record<string, string> = {};
+        Object.entries(this.root).forEach(([key, value]) => {
             if (value !== undefined) {
                 const newKey = (this.xmlKeys && this.xmlKeys[key]) || key;
                 // eslint-disable-next-line functional/immutable-data

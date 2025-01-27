@@ -1,6 +1,5 @@
-import { UnderlineType } from "@file/paragraph/run/underline";
-
 import { LineRuleType } from "@file/paragraph";
+import { UnderlineType } from "@file/paragraph/run/underline";
 
 import { IBaseCharacterStyleOptions, StyleForCharacter } from "./character-style";
 import { IBaseParagraphStyleOptions, IParagraphStyleOptions, StyleForParagraph } from "./paragraph-style";
@@ -8,10 +7,10 @@ import { IBaseParagraphStyleOptions, IParagraphStyleOptions, StyleForParagraph }
 export class HeadingStyle extends StyleForParagraph {
     public constructor(options: IParagraphStyleOptions) {
         super({
-            ...options,
             basedOn: "Normal",
             next: "Normal",
             quickFormat: true,
+            ...options,
         });
     }
 }
@@ -19,9 +18,9 @@ export class HeadingStyle extends StyleForParagraph {
 export class TitleStyle extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Title",
             name: "Title",
+            ...options,
         });
     }
 }
@@ -29,9 +28,9 @@ export class TitleStyle extends HeadingStyle {
 export class Heading1Style extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Heading1",
             name: "Heading 1",
+            ...options,
         });
     }
 }
@@ -39,9 +38,9 @@ export class Heading1Style extends HeadingStyle {
 export class Heading2Style extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Heading2",
             name: "Heading 2",
+            ...options,
         });
     }
 }
@@ -49,9 +48,9 @@ export class Heading2Style extends HeadingStyle {
 export class Heading3Style extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Heading3",
             name: "Heading 3",
+            ...options,
         });
     }
 }
@@ -59,9 +58,9 @@ export class Heading3Style extends HeadingStyle {
 export class Heading4Style extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Heading4",
             name: "Heading 4",
+            ...options,
         });
     }
 }
@@ -69,9 +68,9 @@ export class Heading4Style extends HeadingStyle {
 export class Heading5Style extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Heading5",
             name: "Heading 5",
+            ...options,
         });
     }
 }
@@ -79,9 +78,9 @@ export class Heading5Style extends HeadingStyle {
 export class Heading6Style extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Heading6",
             name: "Heading 6",
+            ...options,
         });
     }
 }
@@ -89,9 +88,9 @@ export class Heading6Style extends HeadingStyle {
 export class StrongStyle extends HeadingStyle {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "Strong",
             name: "Strong",
+            ...options,
         });
     }
 }
@@ -99,11 +98,11 @@ export class StrongStyle extends HeadingStyle {
 export class ListParagraph extends StyleForParagraph {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "ListParagraph",
             name: "List Paragraph",
             basedOn: "Normal",
             quickFormat: true,
+            ...options,
         });
     }
 }
@@ -111,7 +110,6 @@ export class ListParagraph extends StyleForParagraph {
 export class FootnoteText extends StyleForParagraph {
     public constructor(options: IBaseParagraphStyleOptions) {
         super({
-            ...options,
             id: "FootnoteText",
             name: "footnote text",
             link: "FootnoteTextChar",
@@ -129,6 +127,7 @@ export class FootnoteText extends StyleForParagraph {
             run: {
                 size: 20,
             },
+            ...options,
         });
     }
 }
@@ -136,7 +135,6 @@ export class FootnoteText extends StyleForParagraph {
 export class FootnoteReferenceStyle extends StyleForCharacter {
     public constructor(options: IBaseCharacterStyleOptions) {
         super({
-            ...options,
             id: "FootnoteReference",
             name: "footnote reference",
             basedOn: "DefaultParagraphFont",
@@ -144,6 +142,7 @@ export class FootnoteReferenceStyle extends StyleForCharacter {
             run: {
                 superScript: true,
             },
+            ...options,
         });
     }
 }
@@ -151,7 +150,6 @@ export class FootnoteReferenceStyle extends StyleForCharacter {
 export class FootnoteTextChar extends StyleForCharacter {
     public constructor(options: IBaseCharacterStyleOptions) {
         super({
-            ...options,
             id: "FootnoteTextChar",
             name: "Footnote Text Char",
             basedOn: "DefaultParagraphFont",
@@ -160,6 +158,7 @@ export class FootnoteTextChar extends StyleForCharacter {
             run: {
                 size: 20,
             },
+            ...options,
         });
     }
 }
@@ -167,7 +166,6 @@ export class FootnoteTextChar extends StyleForCharacter {
 export class HyperlinkStyle extends StyleForCharacter {
     public constructor(options: IBaseCharacterStyleOptions) {
         super({
-            ...options,
             id: "Hyperlink",
             name: "Hyperlink",
             basedOn: "DefaultParagraphFont",
@@ -177,6 +175,7 @@ export class HyperlinkStyle extends StyleForCharacter {
                     type: UnderlineType.SINGLE,
                 },
             },
+            ...options,
         });
     }
 }

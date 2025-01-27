@@ -1,9 +1,6 @@
-import { assert, expect } from "chai";
-import { SinonStub, stub } from "sinon";
+import { assert, describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
-import * as convenienceFunctions from "@util/convenience-functions";
-
 import { Utility } from "tests/utility";
 
 import { IDrawingOptions } from "../drawing";
@@ -11,10 +8,11 @@ import { TextWrappingType } from "../text-wrap";
 import { Anchor } from "./anchor";
 
 const createAnchor = (drawingOptions: IDrawingOptions): Anchor =>
-    new Anchor(
-        {
+    new Anchor({
+        mediaData: {
+            type: "png",
             fileName: "test.png",
-            stream: new Buffer(""),
+            data: Buffer.from(""),
             transformation: {
                 pixels: {
                     x: 0,
@@ -26,7 +24,7 @@ const createAnchor = (drawingOptions: IDrawingOptions): Anchor =>
                 },
             },
         },
-        {
+        transform: {
             pixels: {
                 x: 100,
                 y: 100,
@@ -37,17 +35,9 @@ const createAnchor = (drawingOptions: IDrawingOptions): Anchor =>
             },
         },
         drawingOptions,
-    );
+    });
 
 describe("Anchor", () => {
-    before(() => {
-        stub(convenienceFunctions, "uniqueNumericId").callsFake(() => 0);
-    });
-
-    after(() => {
-        (convenienceFunctions.uniqueNumericId as SinonStub).restore();
-    });
-
     let anchor: Anchor;
 
     describe("#constructor()", () => {
@@ -466,7 +456,7 @@ describe("Anchor", () => {
                         "wp:docPr": {
                             _attr: {
                                 descr: "test",
-                                id: 0,
+                                id: 1,
                                 name: "test",
                                 title: "test",
                             },

@@ -1,9 +1,9 @@
-import { expect } from "chai";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { ExternalStylesFactory } from "./external-styles-factory";
 
 describe("External styles factory", () => {
-    let externalStyles;
+    let externalStyles: string;
 
     beforeEach(() => {
         externalStyles = `
@@ -61,7 +61,7 @@ describe("External styles factory", () => {
         it("should parse other child elements of w:styles", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const importedStyle = new ExternalStylesFactory().newInstance(externalStyles) as any;
-            expect(importedStyle.root[1]).to.deep.equal({
+            expect(JSON.parse(JSON.stringify(importedStyle.root[1]))).to.deep.equal({
                 root: [
                     {
                         root: [
@@ -126,7 +126,7 @@ describe("External styles factory", () => {
                 ],
                 rootKey: "w:docDefaults",
             });
-            expect(importedStyle.root[2]).to.deep.equal({
+            expect(JSON.parse(JSON.stringify(importedStyle.root[2]))).to.deep.equal({
                 root: [
                     {
                         root: {
@@ -144,6 +144,10 @@ describe("External styles factory", () => {
             expect(() => new ExternalStylesFactory().newInstance(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo/>`)).to.throw(
                 "can not find styles element",
             );
+
+            expect(() => new ExternalStylesFactory().newInstance(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`)).to.throw(
+                "can not find styles element",
+            );
         });
 
         it("should parse styles elements", () => {
@@ -151,7 +155,7 @@ describe("External styles factory", () => {
             const importedStyle = new ExternalStylesFactory().newInstance(externalStyles) as any;
 
             expect(importedStyle.root.length).to.equal(5);
-            expect(importedStyle.root[3]).to.deep.equal({
+            expect(JSON.parse(JSON.stringify(importedStyle.root[3]))).to.deep.equal({
                 root: [
                     {
                         root: {
@@ -180,7 +184,7 @@ describe("External styles factory", () => {
                 rootKey: "w:style",
             });
 
-            expect(importedStyle.root[4]).to.deep.equal({
+            expect(JSON.parse(JSON.stringify(importedStyle.root[4]))).to.deep.equal({
                 root: [
                     {
                         root: {

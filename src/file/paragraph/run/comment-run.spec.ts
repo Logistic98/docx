@@ -1,7 +1,8 @@
-import { expect } from "chai";
-import * as sinon from "sinon";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Formatter } from "@export/formatter";
+
+import { Paragraph } from "../paragraph";
 import { Comment, CommentRangeEnd, CommentRangeStart, CommentReference, Comments } from "./comment-run";
 
 describe("CommentRangeStart", () => {
@@ -41,22 +42,22 @@ describe("CommentReference", () => {
 });
 
 describe("Comment", () => {
-    let clock: sinon.SinonFakeTimers;
-
     beforeEach(() => {
         const now = new Date("1999-01-01T00:00:00.000Z");
-        clock = sinon.useFakeTimers(now.getTime());
+        vi.useFakeTimers({
+            now: now.getTime(),
+        });
     });
 
     afterEach(() => {
-        clock.restore();
+        vi.restoreAllMocks();
     });
 
     describe("#constructor()", () => {
         it("should create", () => {
             const component = new Comment({
                 id: 0,
-                text: "test-comment",
+                children: [new Paragraph("test-comment")],
                 date: new Date("1999-01-01T00:00:00.000Z"),
             });
             const tree = new Formatter().format(component);
@@ -88,7 +89,7 @@ describe("Comment", () => {
         it("should create by using default date", () => {
             const component = new Comment({
                 id: 0,
-                text: "test-comment",
+                children: [new Paragraph("test-comment")],
             });
             const tree = new Formatter().format(component);
             expect(tree).to.deep.equal({
@@ -125,12 +126,12 @@ describe("Comments", () => {
                 children: [
                     {
                         id: 0,
-                        text: "test-comment",
+                        children: [new Paragraph("test-comment")],
                         date: new Date("1999-01-01T00:00:00.000Z"),
                     },
                     {
                         id: 1,
-                        text: "test-comment-2",
+                        children: [new Paragraph("test-comment-2")],
                         date: new Date("1999-01-01T00:00:00.000Z"),
                     },
                 ],

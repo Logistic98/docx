@@ -1,16 +1,14 @@
 // http://officeopenxml.com/WPsection.php
-// tslint:disable: no-unnecessary-initializer
 
 import { FooterWrapper } from "@file/footer-wrapper";
 import { HeaderWrapper } from "@file/header-wrapper";
 import { VerticalAlign, VerticalAlignElement } from "@file/vertical-align";
 import { OnOffElement, XmlComponent } from "@file/xml-components";
-import { PositiveUniversalMeasure, UniversalMeasure } from "@util/values";
 
-import { HeaderFooterReference, HeaderFooterReferenceType, HeaderFooterType } from "./properties/header-footer-reference";
 import { Columns, IColumnsAttributes } from "./properties/columns";
 import { DocumentGrid, IDocGridAttributesProperties } from "./properties/doc-grid";
-import { ILineNumberAttributes, LineNumberType } from "./properties/line-number";
+import { HeaderFooterReference, HeaderFooterReferenceType, HeaderFooterType } from "./properties/header-footer-reference";
+import { ILineNumberAttributes, createLineNumberType } from "./properties/line-number";
 import { IPageBordersOptions, PageBorders } from "./properties/page-borders";
 import { IPageMarginAttributes, PageMargin } from "./properties/page-margin";
 import { IPageNumberTypeAttributes, PageNumberType } from "./properties/page-number";
@@ -18,29 +16,29 @@ import { IPageSizeAttributes, PageOrientation, PageSize } from "./properties/pag
 import { PageTextDirection, PageTextDirectionType } from "./properties/page-text-direction";
 import { SectionType, Type } from "./properties/section-type";
 
-export interface IHeaderFooterGroup<T> {
+export type IHeaderFooterGroup<T> = {
     readonly default?: T;
     readonly first?: T;
     readonly even?: T;
-}
+};
 
-export interface ISectionPropertiesOptions {
+export type ISectionPropertiesOptions = {
     readonly page?: {
         readonly size?: IPageSizeAttributes;
         readonly margin?: IPageMarginAttributes;
         readonly pageNumbers?: IPageNumberTypeAttributes;
         readonly borders?: IPageBordersOptions;
-        readonly textDirection?: PageTextDirectionType;
+        readonly textDirection?: (typeof PageTextDirectionType)[keyof typeof PageTextDirectionType];
     };
     readonly grid?: IDocGridAttributesProperties;
     readonly headerWrapperGroup?: IHeaderFooterGroup<HeaderWrapper>;
     readonly footerWrapperGroup?: IHeaderFooterGroup<FooterWrapper>;
     readonly lineNumbers?: ILineNumberAttributes;
     readonly titlePage?: boolean;
-    readonly verticalAlign?: VerticalAlign;
+    readonly verticalAlign?: (typeof VerticalAlign)[keyof typeof VerticalAlign];
     readonly column?: IColumnsAttributes;
-    readonly type?: SectionType;
-}
+    readonly type?: (typeof SectionType)[keyof typeof SectionType];
+};
 
 // <xsd:complexType name="CT_SectPr">
 //     <xsd:sequence>
@@ -76,10 +74,10 @@ export interface ISectionPropertiesOptions {
 // </xsd:group>
 
 export const sectionMarginDefaults = {
-    TOP: "1in" as UniversalMeasure,
-    RIGHT: "1in" as PositiveUniversalMeasure,
-    BOTTOM: "1in" as UniversalMeasure,
-    LEFT: "1in" as PositiveUniversalMeasure,
+    TOP: 1440,
+    RIGHT: 1440,
+    BOTTOM: 1440,
+    LEFT: 1440,
     HEADER: 708,
     FOOTER: 708,
     GUTTER: 0,
@@ -138,7 +136,7 @@ export class SectionProperties extends XmlComponent {
         }
 
         if (lineNumbers) {
-            this.root.push(new LineNumberType(lineNumbers));
+            this.root.push(createLineNumberType(lineNumbers));
         }
 
         this.root.push(new PageNumberType(pageNumbers));
@@ -163,7 +161,7 @@ export class SectionProperties extends XmlComponent {
     }
 
     private addHeaderFooterGroup(
-        type: HeaderFooterType,
+        type: (typeof HeaderFooterType)[keyof typeof HeaderFooterType],
         group: IHeaderFooterGroup<HeaderWrapper> | IHeaderFooterGroup<FooterWrapper>,
     ): void {
         if (group.default) {

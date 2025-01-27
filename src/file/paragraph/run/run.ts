@@ -1,14 +1,9 @@
 // http://officeopenxml.com/WPtext.php
-import { XmlComponent } from "@file/xml-components";
-
 import { FootnoteReferenceRun } from "@file/footnotes/footnote/run/reference-run";
 import { FieldInstruction } from "@file/table-of-contents/field-instruction";
+import { XmlComponent } from "@file/xml-components";
 
 import { Break } from "./break";
-import { Begin, End, Separate } from "./field";
-import { NumberOfPages, NumberOfPagesSection, Page } from "./page-number";
-import { IRunPropertiesOptions, RunProperties } from "./properties";
-import { Text } from "./run-components/text";
 import {
     AnnotationReference,
     CarriageReturn,
@@ -28,9 +23,13 @@ import {
     YearLong,
     YearShort,
 } from "./empty-children";
+import { Begin, End, Separate } from "./field";
+import { CurrentSection, NumberOfPages, NumberOfPagesSection, Page } from "./page-number";
 import { PositionalTab } from "./positional-tab";
+import { IRunPropertiesOptions, RunProperties } from "./properties";
+import { Text } from "./run-components/text";
 
-export interface IRunOptions extends IRunPropertiesOptions {
+export type IRunOptions = {
     // <xsd:choice>
     //     <xsd:element name="br" type="CT_Br" />
     //     <xsd:element name="t" type="CT_Text" />
@@ -71,7 +70,7 @@ export interface IRunOptions extends IRunPropertiesOptions {
         | FieldInstruction
         | Separate
         | End
-        | PageNumber
+        | (typeof PageNumber)[keyof typeof PageNumber]
         | FootnoteReferenceRun
         | Break
         | AnnotationReference
@@ -96,13 +95,14 @@ export interface IRunOptions extends IRunPropertiesOptions {
     )[];
     readonly break?: number;
     readonly text?: string;
-}
+} & IRunPropertiesOptions;
 
-export enum PageNumber {
-    CURRENT = "CURRENT",
-    TOTAL_PAGES = "TOTAL_PAGES",
-    TOTAL_PAGES_IN_SECTION = "TOTAL_PAGES_IN_SECTION",
-}
+export const PageNumber = {
+    CURRENT: "CURRENT",
+    TOTAL_PAGES: "TOTAL_PAGES",
+    TOTAL_PAGES_IN_SECTION: "TOTAL_PAGES_IN_SECTION",
+    CURRENT_SECTION: "SECTION",
+} as const;
 
 export class Run extends XmlComponent {
     protected readonly properties: RunProperties;
@@ -140,6 +140,12 @@ export class Run extends XmlComponent {
                             this.root.push(new Separate());
                             this.root.push(new End());
                             break;
+                        case PageNumber.CURRENT_SECTION:
+                            this.root.push(new Begin());
+                            this.root.push(new CurrentSection());
+                            this.root.push(new Separate());
+                            this.root.push(new End());
+                            break;
                         default:
                             this.root.push(new Text(child));
                             break;
@@ -149,7 +155,7 @@ export class Run extends XmlComponent {
 
                 this.root.push(child);
             }
-        } else if (options.text) {
+        } else if (options.text !== undefined) {
             this.root.push(new Text(options.text));
         }
     }

@@ -1,7 +1,7 @@
 export * from "./paragraph";
 export * from "./table";
 export * from "./file";
-export * from "./file-properties";
+export * from "./file-child";
 export * from "./numbering";
 export * from "./media";
 export * from "./drawing";
@@ -18,3 +18,6 @@ export * from "./track-revision";
 export * from "./shared";
 export * from "./border";
 export * from "./vertical-align";
+export * from "./checkbox";
+export * from "./fonts";
+export * from "./textbox";

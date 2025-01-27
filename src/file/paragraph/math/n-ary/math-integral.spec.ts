@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
 
@@ -22,7 +22,7 @@ describe("MathIntegral", () => {
                             {
                                 "m:limLoc": {
                                     _attr: {
-                                        "m:val": "undOvr",
+                                        "m:val": "subSup",
                                     },
                                 },
                             },
@@ -78,7 +78,7 @@ describe("MathIntegral", () => {
                             {
                                 "m:limLoc": {
                                     _attr: {
-                                        "m:val": "undOvr",
+                                        "m:val": "subSup",
                                     },
                                 },
                             },

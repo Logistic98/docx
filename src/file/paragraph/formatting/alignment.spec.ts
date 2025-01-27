@@ -1,6 +1,7 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
+
 import { Alignment, AlignmentType } from "./alignment";
 
 describe("Alignment", () => {

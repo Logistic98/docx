@@ -8,16 +8,20 @@ import { Paragraph } from "./paragraph";
 import { Relationships } from "./relationships";
 import { Table } from "./table";
 
-export interface IDocumentFooter {
+export type IDocumentFooter = {
     readonly footer: FooterWrapper;
-    readonly type: HeaderFooterReferenceType;
-}
+    readonly type: (typeof HeaderFooterReferenceType)[keyof typeof HeaderFooterReferenceType];
+};
 
 export class FooterWrapper implements IViewWrapper {
     private readonly footer: Footer;
     private readonly relationships: Relationships;
 
-    public constructor(private readonly media: Media, referenceId: number, initContent?: XmlComponent) {
+    public constructor(
+        private readonly media: Media,
+        referenceId: number,
+        initContent?: XmlComponent,
+    ) {
         this.footer = new Footer(referenceId, initContent);
         this.relationships = new Relationships();
     }

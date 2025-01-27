@@ -1,6 +1,7 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
+
 import { PageReferenceFieldInstruction } from "./pageref-field-instruction";
 
 describe("PageReference field instruction", () => {

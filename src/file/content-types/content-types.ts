@@ -1,4 +1,5 @@
 import { XmlComponent } from "@file/xml-components";
+
 import { ContentTypeAttributes } from "./content-types-attributes";
 import { Default } from "./default/default";
 import { Override } from "./override/override";
@@ -18,8 +19,10 @@ export class ContentTypes extends XmlComponent {
         this.root.push(new Default("image/jpeg", "jpg"));
         this.root.push(new Default("image/bmp", "bmp"));
         this.root.push(new Default("image/gif", "gif"));
+        this.root.push(new Default("image/svg+xml", "svg"));
         this.root.push(new Default("application/vnd.openxmlformats-package.relationships+xml", "rels"));
         this.root.push(new Default("application/xml", "xml"));
+        this.root.push(new Default("application/vnd.openxmlformats-officedocument.obfuscatedFont", "odttf"));
 
         this.root.push(
             new Override("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml", "/word/document.xml"),
@@ -33,6 +36,7 @@ export class ContentTypes extends XmlComponent {
         this.root.push(new Override("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", "/word/footnotes.xml"));
         this.root.push(new Override("application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml", "/word/settings.xml"));
         this.root.push(new Override("application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", "/word/comments.xml"));
+        this.root.push(new Override("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml", "/word/fontTable.xml"));
     }
 
     public addFooter(index: number): void {

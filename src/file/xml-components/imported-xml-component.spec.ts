@@ -1,10 +1,10 @@
-import { expect } from "chai";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Element, xml2js } from "xml-js";
 
 import { EMPTY_OBJECT } from "@file/xml-components";
 
-import { convertToXmlComponent, ImportedRootElementAttributes, ImportedXmlComponent } from "./imported-xml-component";
 import { IContext } from "./base";
+import { ImportedRootElementAttributes, ImportedXmlComponent, convertToXmlComponent } from "./imported-xml-component";
 
 const xmlString = `
         <w:p w:one="value 1" w:two="value 2">
@@ -44,7 +44,6 @@ const convertedXmlElement = {
             ],
         },
     ],
-    rootKey: undefined,
 };
 
 describe("ImportedXmlComponent", () => {
@@ -56,14 +55,14 @@ describe("ImportedXmlComponent", () => {
             otherAttr: "2",
         };
         importedXmlComponent = new ImportedXmlComponent("w:test", attributes);
+
         importedXmlComponent.push(new ImportedXmlComponent("w:child"));
     });
 
     describe("#prepForXml()", () => {
         it("should transform for xml", () => {
-            // tslint:disable-next-line: no-object-literal-type-assertion
             const converted = importedXmlComponent.prepForXml({ stack: [] } as unknown as IContext);
-            expect(converted).to.deep.equal({
+            expect(JSON.parse(JSON.stringify(converted))).to.deep.equal({
                 "w:test": [
                     {
                         _attr: {
@@ -81,14 +80,14 @@ describe("ImportedXmlComponent", () => {
 
     it("should create XmlComponent from xml string", () => {
         const converted = ImportedXmlComponent.fromXmlString(xmlString);
-        expect(converted).to.deep.equal(convertedXmlElement);
+        expect(JSON.parse(JSON.stringify(converted))).to.deep.equal(convertedXmlElement);
     });
 
     describe("convertToXmlComponent", () => {
         it("should convert to xml component", () => {
             const xmlObj = xml2js(xmlString, { compact: false }) as Element;
             const converted = convertToXmlComponent(xmlObj);
-            expect(converted).to.deep.equal(convertedXmlElement);
+            expect(JSON.parse(JSON.stringify(converted))).to.deep.equal(convertedXmlElement);
         });
 
         it("should return undefined if xml type is invalid", () => {
@@ -108,7 +107,6 @@ describe("ImportedRootElementAttributes", () => {
 
     describe("#prepForXml()", () => {
         it("should work", () => {
-            // tslint:disable-next-line: no-object-literal-type-assertion
             const converted = attributes.prepForXml({} as IContext);
             expect(converted).to.deep.equal({
                 _attr: {},

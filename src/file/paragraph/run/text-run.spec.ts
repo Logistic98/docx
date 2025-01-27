@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
 import { FootnoteReferenceRun } from "@file/footnotes/footnote/run/reference-run";
@@ -14,6 +14,14 @@ describe("TextRun", () => {
             const f = new Formatter().format(run);
             expect(f).to.deep.equal({
                 "w:r": [{ "w:t": [{ _attr: { "xml:space": "preserve" } }, "test"] }],
+            });
+        });
+
+        it("should add empty text into run", () => {
+            run = new TextRun({ text: "" });
+            const f = new Formatter().format(run);
+            expect(f).to.deep.equal({
+                "w:r": [{ "w:t": [{ _attr: { "xml:space": "preserve" } }, ""] }],
             });
         });
     });

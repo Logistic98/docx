@@ -1,9 +1,7 @@
-import { expect } from "chai";
-import { SinonStub, stub } from "sinon";
+import { describe, expect, it } from "vitest";
 
-import { IContext } from "@file/xml-components";
 import { Formatter } from "@export/formatter";
-import * as convenienceFunctions from "@util/convenience-functions";
+import { IContext } from "@file/xml-components";
 
 import { ConcreteHyperlink, TextRun } from "../";
 import { Drawing, IDrawingOptions } from "./drawing";
@@ -13,8 +11,9 @@ const imageBase64Data = `iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAACzVBMVEU
 const createDrawing = (drawingOptions?: IDrawingOptions): Drawing =>
     new Drawing(
         {
+            type: "jpg",
             fileName: "test.jpg",
-            stream: Buffer.from(imageBase64Data, "base64"),
+            data: Buffer.from(imageBase64Data, "base64"),
             transformation: {
                 pixels: {
                     x: 100,
@@ -30,14 +29,6 @@ const createDrawing = (drawingOptions?: IDrawingOptions): Drawing =>
     );
 
 describe("Drawing", () => {
-    before(() => {
-        stub(convenienceFunctions, "uniqueNumericId").callsFake(() => 0);
-    });
-
-    after(() => {
-        (convenienceFunctions.uniqueNumericId as SinonStub).restore();
-    });
-
     let currentBreak: Drawing;
 
     describe("#constructor()", () => {
@@ -78,7 +69,7 @@ describe("Drawing", () => {
                                 "wp:docPr": {
                                     _attr: {
                                         descr: "",
-                                        id: 0,
+                                        id: 1,
                                         name: "",
                                         title: "",
                                     },
@@ -89,7 +80,6 @@ describe("Drawing", () => {
                                     {
                                         "a:graphicFrameLocks": {
                                             _attr: {
-                                                // tslint:disable-next-line:object-literal-key-quotes
                                                 noChangeAspect: 1,
                                                 "xmlns:a": "http://schemas.openxmlformats.org/drawingml/2006/main",
                                             },
@@ -148,7 +138,6 @@ describe("Drawing", () => {
                                                             {
                                                                 "a:blip": {
                                                                     _attr: {
-                                                                        // tslint:disable-next-line:object-literal-key-quotes
                                                                         cstate: "none",
                                                                         "r:embed": "rId{test.jpg}",
                                                                     },
@@ -309,7 +298,7 @@ describe("Drawing", () => {
                                 "wp:docPr": {
                                     _attr: {
                                         descr: "",
-                                        id: 0,
+                                        id: 1,
                                         name: "",
                                         title: "",
                                     },
@@ -320,7 +309,6 @@ describe("Drawing", () => {
                                     {
                                         "a:graphicFrameLocks": {
                                             _attr: {
-                                                // tslint:disable-next-line:object-literal-key-quotes
                                                 noChangeAspect: 1,
                                                 "xmlns:a": "http://schemas.openxmlformats.org/drawingml/2006/main",
                                             },
@@ -379,7 +367,6 @@ describe("Drawing", () => {
                                                             {
                                                                 "a:blip": {
                                                                     _attr: {
-                                                                        // tslint:disable-next-line:object-literal-key-quotes
                                                                         cstate: "none",
                                                                         "r:embed": "rId{test.jpg}",
                                                                     },
@@ -543,7 +530,7 @@ describe("Drawing", () => {
                                     {
                                         _attr: {
                                             descr: "",
-                                            id: 0,
+                                            id: 1,
                                             name: "",
                                             title: "",
                                         },
@@ -563,7 +550,6 @@ describe("Drawing", () => {
                                     {
                                         "a:graphicFrameLocks": {
                                             _attr: {
-                                                // tslint:disable-next-line:object-literal-key-quotes
                                                 noChangeAspect: 1,
                                                 "xmlns:a": "http://schemas.openxmlformats.org/drawingml/2006/main",
                                             },
@@ -631,7 +617,6 @@ describe("Drawing", () => {
                                                             {
                                                                 "a:blip": {
                                                                     _attr: {
-                                                                        // tslint:disable-next-line:object-literal-key-quotes
                                                                         cstate: "none",
                                                                         "r:embed": "rId{test.jpg}",
                                                                     },

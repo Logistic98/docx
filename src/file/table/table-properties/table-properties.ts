@@ -31,18 +31,18 @@ import { ITableCellMarginOptions, TableCellMargin, TableCellMarginElementType } 
 import { ITableFloatOptions, TableFloatProperties } from "./table-float-properties";
 import { TableLayout, TableLayoutType } from "./table-layout";
 
-export interface ITablePropertiesOptions {
+export type ITablePropertiesOptions = {
     readonly width?: ITableWidthProperties;
     readonly indent?: ITableWidthProperties;
-    readonly layout?: TableLayoutType;
+    readonly layout?: (typeof TableLayoutType)[keyof typeof TableLayoutType];
     readonly borders?: ITableBordersOptions;
     readonly float?: ITableFloatOptions;
     readonly shading?: IShadingAttributesProperties;
     readonly style?: string;
-    readonly alignment?: AlignmentType;
+    readonly alignment?: (typeof AlignmentType)[keyof typeof AlignmentType];
     readonly cellMargin?: ITableCellMarginOptions;
     readonly visuallyRightToLeft?: boolean;
-}
+};
 
 export class TableProperties extends IgnoreIfEmptyXmlComponent {
     public constructor(options: ITablePropertiesOptions) {

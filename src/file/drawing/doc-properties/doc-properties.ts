@@ -1,8 +1,7 @@
 // https://c-rex.net/projects/samples/ooxml/e1/Part4/OOXML_P4_DOCX_docPr_topic_ID0ES32OB.html
-import { IContext, IXmlableObject, NextAttributeComponent, XmlComponent } from "@file/xml-components";
 import { ConcreteHyperlink } from "@file/paragraph";
-
-import { uniqueNumericId } from "@util/convenience-functions";
+import { IContext, IXmlableObject, NextAttributeComponent, XmlComponent } from "@file/xml-components";
+import { docPropertiesUniqueNumericIdGen } from "@util/convenience-functions";
 
 import { createHyperlinkClick } from "./doc-properties-children";
 
@@ -18,13 +17,15 @@ import { createHyperlinkClick } from "./doc-properties-children";
 //     <attribute name="hidden" type="xsd:boolean" use="optional" default="false" />
 // </complexType>
 
-export interface DocPropertiesOptions {
+export type DocPropertiesOptions = {
     readonly name: string;
     readonly description: string;
     readonly title: string;
-}
+};
 
 export class DocProperties extends XmlComponent {
+    private readonly docPropertiesUniqueNumericId = docPropertiesUniqueNumericIdGen();
+
     public constructor({ name, description, title }: DocPropertiesOptions = { name: "", description: "", title: "" }) {
         super("wp:docPr");
 
@@ -32,7 +33,7 @@ export class DocProperties extends XmlComponent {
             new NextAttributeComponent({
                 id: {
                     key: "id",
-                    value: uniqueNumericId(),
+                    value: this.docPropertiesUniqueNumericId(),
                 },
                 name: {
                     key: "name",

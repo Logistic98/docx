@@ -1,14 +1,14 @@
 import { XmlComponent } from "@file/xml-components";
 
-import { IRunOptions, RunProperties } from "../../index";
-import { Break } from "../../paragraph/run/break";
-import { Begin, End, Separate } from "../../paragraph/run/field";
-import { PageNumber } from "../../paragraph/run/run";
-import { ChangeAttributes, IChangedAttributesProperties } from "../track-revision";
 import { DeletedNumberOfPages, DeletedNumberOfPagesSection, DeletedPage } from "./deleted-page-number";
 import { DeletedText } from "./deleted-text";
+import { Break } from "../../paragraph/run/break";
+import { Begin, End, Separate } from "../../paragraph/run/field";
+import { RunProperties } from "../../paragraph/run/properties";
+import { IRunOptions, PageNumber } from "../../paragraph/run/run";
+import { ChangeAttributes, IChangedAttributesProperties } from "../track-revision";
 
-interface IDeletedRunOptions extends IRunOptions, IChangedAttributesProperties {}
+type IDeletedRunOptions = IRunOptions & IChangedAttributesProperties;
 
 export class DeletedTextRun extends XmlComponent {
     protected readonly deletedTextRunWrapper: DeletedTextRunWrapper;

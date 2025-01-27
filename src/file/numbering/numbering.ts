@@ -2,19 +2,19 @@
 // https://stackoverflow.com/questions/58622437/purpose-of-abstractnum-and-numberinginstance
 import { AlignmentType } from "@file/paragraph";
 import { IContext, IXmlableObject, XmlComponent } from "@file/xml-components";
-import { convertInchesToTwip, uniqueNumericId } from "@util/convenience-functions";
+import { abstractNumUniqueNumericIdGen, concreteNumUniqueNumericIdGen, convertInchesToTwip } from "@util/convenience-functions";
 
-import { DocumentAttributes } from "../document/document-attributes";
 import { AbstractNumbering } from "./abstract-numbering";
 import { ILevelsOptions, LevelFormat } from "./level";
 import { ConcreteNumbering } from "./num";
+import { DocumentAttributes } from "../document/document-attributes";
 
-export interface INumberingOptions {
+export type INumberingOptions = {
     readonly config: readonly {
         readonly levels: readonly ILevelsOptions[];
         readonly reference: string;
     }[];
-}
+};
 
 // <xsd:element name="numbering" type="CT_Numbering"/>
 //
@@ -29,33 +29,21 @@ export interface INumberingOptions {
 export class Numbering extends XmlComponent {
     private readonly abstractNumberingMap = new Map<string, AbstractNumbering>();
     private readonly concreteNumberingMap = new Map<string, ConcreteNumbering>();
-    private readonly referenceConfigMap = new Map<string, object>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private readonly referenceConfigMap = new Map<string, Record<string, any>>();
+    private readonly abstractNumUniqueNumericId = abstractNumUniqueNumericIdGen();
+    private readonly concreteNumUniqueNumericId = concreteNumUniqueNumericIdGen();
 
     public constructor(options: INumberingOptions) {
         super("w:numbering");
         this.root.push(
-            new DocumentAttributes({
-                wpc: "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas",
-                mc: "http://schemas.openxmlformats.org/markup-compatibility/2006",
-                o: "urn:schemas-microsoft-com:office:office",
-                r: "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
-                m: "http://schemas.openxmlformats.org/officeDocument/2006/math",
-                v: "urn:schemas-microsoft-com:vml",
-                wp14: "http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing",
-                wp: "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing",
-                w10: "urn:schemas-microsoft-com:office:word",
-                w: "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
-                w14: "http://schemas.microsoft.com/office/word/2010/wordml",
-                w15: "http://schemas.microsoft.com/office/word/2012/wordml",
-                wpg: "http://schemas.microsoft.com/office/word/2010/wordprocessingGroup",
-                wpi: "http://schemas.microsoft.com/office/word/2010/wordprocessingInk",
-                wne: "http://schemas.microsoft.com/office/word/2006/wordml",
-                wps: "http://schemas.microsoft.com/office/word/2010/wordprocessingShape",
-                Ignorable: "w14 w15 wp14",
-            }),
+            new DocumentAttributes(
+                ["wpc", "mc", "o", "r", "m", "v", "wp14", "wp", "w10", "w", "w14", "w15", "wpg", "wpi", "wne", "wps"],
+                "w14 w15 wp14",
+            ),
         );
 
-        const abstractNumbering = new AbstractNumbering(uniqueNumericId(), [
+        const abstractNumbering = new AbstractNumbering(this.abstractNumUniqueNumericId(), [
             {
                 level: 0,
                 format: LevelFormat.BULLET,
@@ -176,7 +164,7 @@ export class Numbering extends XmlComponent {
         this.abstractNumberingMap.set("default-bullet-numbering", abstractNumbering);
 
         for (const con of options.config) {
-            this.abstractNumberingMap.set(con.reference, new AbstractNumbering(uniqueNumericId(), con.levels));
+            this.abstractNumberingMap.set(con.reference, new AbstractNumbering(this.abstractNumUniqueNumericId(), con.levels));
             this.referenceConfigMap.set(con.reference, con.levels);
         }
     }
@@ -209,11 +197,11 @@ export class Numbering extends XmlComponent {
         const firstLevelStartNumber = referenceConfigLevels && referenceConfigLevels[0].start;
 
         const concreteNumberingSettings = {
-            numId: uniqueNumericId(),
+            numId: this.concreteNumUniqueNumericId(),
             abstractNumId: abstractNumbering.id,
             reference,
             instance,
-            overrideLevel:
+            overrideLevels: [
                 firstLevelStartNumber && Number.isInteger(firstLevelStartNumber)
                     ? {
                           num: 0,
@@ -223,6 +211,7 @@ export class Numbering extends XmlComponent {
                           num: 0,
                           start: 1,
                       },
+            ],
         };
 
         this.concreteNumberingMap.set(fullReference, new ConcreteNumbering(concreteNumberingSettings));
@@ -231,7 +220,8 @@ export class Numbering extends XmlComponent {
     public get ConcreteNumbering(): readonly ConcreteNumbering[] {
         return Array.from(this.concreteNumberingMap.values());
     }
-    public get ReferenceConfig(): readonly object[] {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public get ReferenceConfig(): readonly Record<string, any>[] {
         return Array.from(this.referenceConfigMap.values());
     }
 }

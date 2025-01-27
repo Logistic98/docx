@@ -1,9 +1,9 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
+
 import { DocumentWrapper } from "../document-wrapper";
 import { File } from "../file";
-
 import { ParagraphProperties } from "./properties";
 
 describe("ParagraphProperties", () => {
@@ -23,13 +23,11 @@ describe("ParagraphProperties", () => {
                 },
             });
             const tree = new Formatter().format(properties, {
-                // tslint:disable-next-line: no-object-literal-type-assertion
                 file: {
                     Numbering: {
                         createConcreteNumberingInstance: (_: string, __: number) => undefined,
                     },
                 } as File,
-                // tslint:disable-next-line: no-object-literal-type-assertion
                 viewWrapper: new DocumentWrapper({ background: {} }),
                 stack: [],
             });
@@ -56,6 +54,36 @@ describe("ParagraphProperties", () => {
                                 "w:numId": {
                                     _attr: {
                                         "w:val": "{test-reference-0}",
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        it("should create with numbering disabled", () => {
+            const properties = new ParagraphProperties({
+                numbering: false,
+            });
+            const tree = new Formatter().format(properties);
+
+            expect(tree).to.deep.equal({
+                "w:pPr": [
+                    {
+                        "w:numPr": [
+                            {
+                                "w:ilvl": {
+                                    _attr: {
+                                        "w:val": 0,
+                                    },
+                                },
+                            },
+                            {
+                                "w:numId": {
+                                    _attr: {
+                                        "w:val": 0,
                                     },
                                 },
                             },
@@ -125,6 +153,21 @@ describe("ParagraphProperties", () => {
             });
         });
 
+        it("should create with the autoSpaceEastAsianText property", () => {
+            const properties = new ParagraphProperties({
+                autoSpaceEastAsianText: true,
+            });
+            const tree = new Formatter().format(properties);
+
+            expect(tree).to.deep.equal({
+                "w:pPr": [
+                    {
+                        "w:autoSpaceDN": {},
+                    },
+                ],
+            });
+        });
+
         it("should create with the wordWrap property", () => {
             const properties = new ParagraphProperties({
                 wordWrap: true,
@@ -139,6 +182,53 @@ describe("ParagraphProperties", () => {
                                 "w:val": 0,
                             },
                         },
+                    },
+                ],
+            });
+        });
+
+        it("should create with the overflowPunct property", () => {
+            const properties = new ParagraphProperties({
+                overflowPunctuation: true,
+            });
+            const tree = new Formatter().format(properties);
+
+            expect(tree).to.deep.equal({
+                "w:pPr": [
+                    {
+                        "w:overflowPunct": {},
+                    },
+                ],
+            });
+        });
+
+        it("should create with the run property", () => {
+            const properties = new ParagraphProperties({
+                run: {
+                    size: "10pt",
+                },
+            });
+            const tree = new Formatter().format(properties);
+
+            expect(tree).to.deep.equal({
+                "w:pPr": [
+                    {
+                        "w:rPr": [
+                            {
+                                "w:sz": {
+                                    _attr: {
+                                        "w:val": "10pt",
+                                    },
+                                },
+                            },
+                            {
+                                "w:szCs": {
+                                    _attr: {
+                                        "w:val": "10pt",
+                                    },
+                                },
+                            },
+                        ],
                     },
                 ],
             });

@@ -1,7 +1,7 @@
 // Numbered lists - With complex number text
-// Import from 'docx' rather than '../build' if you install from npm
+
 import * as fs from "fs";
-import { Document, Packer, Paragraph, LevelFormat } from "../build";
+import { Document, Packer, Paragraph, LevelFormat } from "docx";
 
 const doc = new Document({
     numbering: {
@@ -107,5 +107,5 @@ const doc = new Document({
 
 // Used to export the file into a .docx file
 Packer.toBuffer(doc).then((buffer) => {
-    fs.writeFileSync("6-numbering.docx", buffer);
+    fs.writeFileSync("My Document.docx", buffer);
 });

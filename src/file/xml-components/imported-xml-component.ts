@@ -29,6 +29,7 @@ export const convertToXmlComponent = (element: XmlElement): ImportedXmlComponent
             return element.text as string;
         default:
             return undefined;
+        /* c8 ignore next 2 */
     }
 };
 

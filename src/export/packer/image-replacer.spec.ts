@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Media } from "@file/media";
 
@@ -12,7 +12,8 @@ describe("ImageReplacer", () => {
                 "test {test-image.png} test",
                 [
                     {
-                        stream: Buffer.from(""),
+                        type: "png",
+                        data: Buffer.from(""),
                         fileName: "test-image.png",
                         transformation: {
                             pixels: {

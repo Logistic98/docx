@@ -1,5 +1,5 @@
 // Simple example to add text to a document
-// Import from 'docx' rather than '../build' if you install from npm
+
 import * as fs from "fs";
 import {
     Document,
@@ -21,7 +21,9 @@ import {
     Packer,
     Paragraph,
     TextRun,
-} from "../build";
+    MathLimitLower,
+    MathLimitUpper,
+} from "docx";
 
 const doc = new Document({
     sections: [
@@ -311,6 +313,23 @@ const doc = new Document({
                                         }),
                                     ],
                                     denominator: [new MathRun("2a")],
+                                }),
+                            ],
+                        }),
+                    ],
+                }),
+                new Paragraph({
+                    children: [
+                        new Math({
+                            children: [
+                                new MathLimitUpper({
+                                    children: [new MathRun("x")],
+                                    limit: [new MathRun("-")],
+                                }),
+                                new MathRun("="),
+                                new MathLimitLower({
+                                    children: [new MathRun("lim")],
+                                    limit: [new MathRun("x→0")],
                                 }),
                             ],
                         }),

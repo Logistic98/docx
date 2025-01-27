@@ -1,6 +1,9 @@
 // http://officeopenxml.com/WPparagraphProperties.php
 // https://c-rex.net/projects/samples/ooxml/e1/Part4/OOXML_P4_DOCX_suppressLineNumbers_topic_ID0ECJAO.html
-import { IContext, IgnoreIfEmptyXmlComponent, IXmlableObject, OnOffElement, XmlComponent } from "@file/xml-components";
+
+import { IContext, IXmlableObject, IgnoreIfEmptyXmlComponent, OnOffElement, XmlComponent } from "@file/xml-components";
+
+import { IRunOptions, RunProperties } from ".";
 import { DocumentWrapper } from "../document-wrapper";
 import { IShadingAttributesProperties, Shading } from "../shading";
 import { Alignment, AlignmentType } from "./formatting/alignment";
@@ -12,34 +15,42 @@ import { HeadingLevel, Style } from "./formatting/style";
 import { TabStop, TabStopDefinition, TabStopType } from "./formatting/tab-stop";
 import { NumberProperties } from "./formatting/unordered-list";
 import { WordWrap } from "./formatting/word-wrap";
-import { FrameProperties, IFrameOptions } from "./frame/frame-properties";
+import { IFrameOptions, createFrameProperties } from "./frame/frame-properties";
 import { OutlineLevel } from "./links";
 
-export interface ILevelParagraphStylePropertiesOptions {
-    readonly alignment?: AlignmentType;
+export type ILevelParagraphStylePropertiesOptions = {
+    readonly alignment?: (typeof AlignmentType)[keyof typeof AlignmentType];
     readonly thematicBreak?: boolean;
     readonly contextualSpacing?: boolean;
     readonly rightTabStop?: number;
     readonly leftTabStop?: number;
     readonly indent?: IIndentAttributesProperties;
     readonly spacing?: ISpacingProperties;
+    /**
+     * Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible. If multiple paragraphs are to be kept together but they exceed a page, then the set of paragraphs begin on a new page and page breaks are used thereafter as needed.
+     */
     readonly keepNext?: boolean;
+    /**
+     * Specifies that all lines of the paragraph are to be kept on a single page when possible.
+     */
     readonly keepLines?: boolean;
     readonly outlineLevel?: number;
-}
+};
 
-export interface IParagraphStylePropertiesOptions extends ILevelParagraphStylePropertiesOptions {
-    readonly numbering?: {
-        readonly reference: string;
-        readonly level: number;
-        readonly instance?: number;
-        readonly custom?: boolean;
-    };
-}
+export type IParagraphStylePropertiesOptions = {
+    readonly numbering?:
+        | {
+              readonly reference: string;
+              readonly level: number;
+              readonly instance?: number;
+              readonly custom?: boolean;
+          }
+        | false;
+} & ILevelParagraphStylePropertiesOptions;
 
-export interface IParagraphPropertiesOptions extends IParagraphStylePropertiesOptions {
+export type IParagraphPropertiesOptions = {
     readonly border?: IBordersOptions;
-    readonly heading?: HeadingLevel;
+    readonly heading?: (typeof HeadingLevel)[keyof typeof HeadingLevel];
     readonly bidirectional?: boolean;
     readonly pageBreakBefore?: boolean;
     readonly tabStops?: readonly TabStopDefinition[];
@@ -52,8 +63,18 @@ export interface IParagraphPropertiesOptions extends IParagraphStylePropertiesOp
     readonly frame?: IFrameOptions;
     readonly suppressLineNumbers?: boolean;
     readonly wordWrap?: boolean;
+    readonly overflowPunctuation?: boolean;
     readonly scale?: number;
-}
+    /**
+     * This element specifies whether inter-character spacing shall automatically be adjusted between regions of numbers and regions of East Asian text in the current paragraph. These regions shall be determined by the Unicode character values of the text content within the paragraph.
+     * This only works in Microsoft Word. It is not part of the ECMA-376 OOXML standard.
+     */
+    readonly autoSpaceEastAsianText?: boolean;
+    /**
+     * Reference: ECMA-376, 3rd Edition (June, 2011), Fundamentals and Markup Language Reference § 17.3.1.29.
+     */
+    readonly run?: IRunOptions;
+} & IParagraphStylePropertiesOptions;
 
 export class ParagraphProperties extends IgnoreIfEmptyXmlComponent {
     // eslint-disable-next-line functional/prefer-readonly-type
@@ -99,7 +120,7 @@ export class ParagraphProperties extends IgnoreIfEmptyXmlComponent {
         }
 
         if (options.frame) {
-            this.push(new FrameProperties(options.frame));
+            this.push(createFrameProperties(options.frame));
         }
 
         if (options.widowControl !== undefined) {
@@ -117,6 +138,8 @@ export class ParagraphProperties extends IgnoreIfEmptyXmlComponent {
             });
 
             this.push(new NumberProperties(`${options.numbering.reference}-${options.numbering.instance ?? 0}`, options.numbering.level));
+        } else if (options.numbering === false) {
+            this.push(new NumberProperties(0, 0));
         }
 
         if (options.border) {
@@ -135,14 +158,18 @@ export class ParagraphProperties extends IgnoreIfEmptyXmlComponent {
             this.push(new WordWrap());
         }
 
+        if (options.overflowPunctuation) {
+            this.push(new OnOffElement("w:overflowPunct", options.overflowPunctuation));
+        }
+
         /**
          * FIX: Multitab support for Libre Writer
          * Ensure there is only one w:tabs tag with multiple w:tab
          */
         const tabDefinitions: readonly TabStopDefinition[] = [
-            ...(options.rightTabStop ? [{ type: TabStopType.RIGHT, position: options.rightTabStop }] : []),
+            ...(options.rightTabStop !== undefined ? [{ type: TabStopType.RIGHT, position: options.rightTabStop }] : []),
             ...(options.tabStops ? options.tabStops : []),
-            ...(options.leftTabStop ? [{ type: TabStopType.LEFT, position: options.leftTabStop }] : []),
+            ...(options.leftTabStop !== undefined ? [{ type: TabStopType.LEFT, position: options.leftTabStop }] : []),
         ];
 
         if (tabDefinitions.length > 0) {
@@ -178,6 +205,14 @@ export class ParagraphProperties extends IgnoreIfEmptyXmlComponent {
 
         if (options.suppressLineNumbers !== undefined) {
             this.push(new OnOffElement("w:suppressLineNumbers", options.suppressLineNumbers));
+        }
+
+        if (options.autoSpaceEastAsianText !== undefined) {
+            this.push(new OnOffElement("w:autoSpaceDN", options.autoSpaceEastAsianText));
+        }
+
+        if (options.run) {
+            this.push(new RunProperties(options.run));
         }
     }
 

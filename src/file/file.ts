@@ -2,9 +2,10 @@ import { AppProperties } from "./app-properties/app-properties";
 import { ContentTypes } from "./content-types/content-types";
 import { CoreProperties, IPropertiesOptions } from "./core-properties";
 import { CustomProperties } from "./custom-properties";
-import { DocumentWrapper } from "./document-wrapper";
 import { HeaderFooterReferenceType, ISectionPropertiesOptions } from "./document/body/section-properties";
-import { IFileProperties } from "./file-properties";
+import { DocumentWrapper } from "./document-wrapper";
+import { FileChild } from "./file-child";
+import { FontWrapper } from "./fonts/font-wrapper";
 import { FooterWrapper, IDocumentFooter } from "./footer-wrapper";
 import { FootnotesWrapper } from "./footnotes-wrapper";
 import { Footer, Header } from "./header";
@@ -17,9 +18,8 @@ import { Settings } from "./settings";
 import { Styles } from "./styles";
 import { ExternalStylesFactory } from "./styles/external-styles-factory";
 import { DefaultStylesFactory } from "./styles/factory";
-import { FileChild } from "./file-child";
 
-export interface ISectionOptions {
+export type ISectionOptions = {
     readonly headers?: {
         readonly default?: Header;
         readonly first?: Header;
@@ -32,7 +32,7 @@ export interface ISectionOptions {
     };
     readonly properties?: ISectionPropertiesOptions;
     readonly children: readonly FileChild[];
-}
+};
 
 export class File {
     // eslint-disable-next-line functional/prefer-readonly-type
@@ -54,8 +54,9 @@ export class File {
     private readonly appProperties: AppProperties;
     private readonly styles: Styles;
     private readonly comments: Comments;
+    private readonly fontWrapper: FontWrapper;
 
-    public constructor(options: IPropertiesOptions, fileProperties: IFileProperties = {}) {
+    public constructor(options: IPropertiesOptions) {
         this.coreProperties = new CoreProperties({
             ...options,
             creator: options.creator ?? "Un-named",
@@ -78,22 +79,18 @@ export class File {
             evenAndOddHeaders: options.evenAndOddHeaderAndFooters ? true : false,
             trackRevisions: options.features?.trackRevisions,
             updateFields: options.features?.updateFields,
+            defaultTabStop: options.defaultTabStop,
+            hyphenation: {
+                autoHyphenation: options.hyphenation?.autoHyphenation,
+                hyphenationZone: options.hyphenation?.hyphenationZone,
+                consecutiveHyphenLimit: options.hyphenation?.consecutiveHyphenLimit,
+                doNotHyphenateCaps: options.hyphenation?.doNotHyphenateCaps,
+            },
         });
 
-        this.media = fileProperties.template && fileProperties.template.media ? fileProperties.template.media : new Media();
+        this.media = new Media();
 
-        if (fileProperties.template) {
-            this.currentRelationshipId = fileProperties.template.currentRelationshipId + 1;
-        }
-
-        // set up styles
-        if (fileProperties.template && options.externalStyles) {
-            throw Error("can not use both template and external styles");
-        }
-        if (fileProperties.template && fileProperties.template.styles) {
-            const stylesFactory = new ExternalStylesFactory();
-            this.styles = stylesFactory.newInstance(fileProperties.template.styles);
-        } else if (options.externalStyles) {
+        if (options.externalStyles !== undefined) {
             const stylesFactory = new ExternalStylesFactory();
             this.styles = stylesFactory.newInstance(options.externalStyles);
         } else if (options.styles) {
@@ -110,18 +107,6 @@ export class File {
 
         this.addDefaultRelationships();
 
-        if (fileProperties.template && fileProperties.template.headers) {
-            for (const templateHeader of fileProperties.template.headers) {
-                this.addHeaderToDocument(templateHeader.header, templateHeader.type);
-            }
-        }
-
-        if (fileProperties.template && fileProperties.template.footers) {
-            for (const templateFooter of fileProperties.template.footers) {
-                this.addFooterToDocument(templateFooter.footer, templateFooter.type);
-            }
-        }
-
         for (const section of options.sections) {
             this.addSection(section);
         }
@@ -132,6 +117,8 @@ export class File {
                 this.footnotesWrapper.View.createFootNote(parseFloat(key), options.footnotes[key].children);
             }
         }
+
+        this.fontWrapper = new FontWrapper(options.fonts ?? []);
     }
 
     private addSection({ headers = {}, footers = {}, children, properties }: ISectionOptions): void {
@@ -178,7 +165,10 @@ export class File {
         return wrapper;
     }
 
-    private addHeaderToDocument(header: HeaderWrapper, type: HeaderFooterReferenceType = HeaderFooterReferenceType.DEFAULT): void {
+    private addHeaderToDocument(
+        header: HeaderWrapper,
+        type: (typeof HeaderFooterReferenceType)[keyof typeof HeaderFooterReferenceType] = HeaderFooterReferenceType.DEFAULT,
+    ): void {
         // eslint-disable-next-line functional/immutable-data
         this.headers.push({ header, type });
         this.documentWrapper.Relationships.createRelationship(
@@ -189,7 +179,10 @@ export class File {
         this.contentTypes.addHeader(this.headers.length);
     }
 
-    private addFooterToDocument(footer: FooterWrapper, type: HeaderFooterReferenceType = HeaderFooterReferenceType.DEFAULT): void {
+    private addFooterToDocument(
+        footer: FooterWrapper,
+        type: (typeof HeaderFooterReferenceType)[keyof typeof HeaderFooterReferenceType] = HeaderFooterReferenceType.DEFAULT,
+    ): void {
         // eslint-disable-next-line functional/immutable-data
         this.footers.push({ footer, type });
         this.documentWrapper.Relationships.createRelationship(
@@ -308,5 +301,9 @@ export class File {
 
     public get Comments(): Comments {
         return this.comments;
+    }
+
+    public get FontTable(): FontWrapper {
+        return this.fontWrapper;
     }
 }

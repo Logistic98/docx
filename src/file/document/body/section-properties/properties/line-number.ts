@@ -1,6 +1,6 @@
 // http://officeopenxml.com/WPsectionLineNumbering.php
-import { NextAttributeComponent, XmlComponent } from "@file/xml-components";
-import { decimalNumber, PositiveUniversalMeasure, twipsMeasureValue } from "@util/values";
+import { BuilderElement, XmlComponent } from "@file/xml-components";
+import { PositiveUniversalMeasure, decimalNumber, twipsMeasureValue } from "@util/values";
 
 // <xsd:simpleType name="ST_LineNumberRestart">
 // <xsd:restriction base="xsd:string">
@@ -9,11 +9,12 @@ import { decimalNumber, PositiveUniversalMeasure, twipsMeasureValue } from "@uti
 //   <xsd:enumeration value="continuous"/>
 // </xsd:restriction>
 // </xsd:simpleType>
-export enum LineNumberRestartFormat {
-    NEW_PAGE = "newPage",
-    NEW_SECTION = "newSection",
-    CONTINUOUS = "continuous",
-}
+
+export const LineNumberRestartFormat = {
+    NEW_PAGE: "newPage",
+    NEW_SECTION: "newSection",
+    CONTINUOUS: "continuous",
+} as const;
 
 // <xsd:complexType name="CT_LineNumber">
 //     <xsd:attribute name="countBy" type="ST_DecimalNumber" use="optional"/>
@@ -22,28 +23,23 @@ export enum LineNumberRestartFormat {
 //     <xsd:attribute name="restart" type="ST_LineNumberRestart" use="optional" default="newPage"/>
 // </xsd:complexType>
 
-export interface ILineNumberAttributes {
+export type ILineNumberAttributes = {
     readonly countBy?: number;
     readonly start?: number;
-    readonly restart?: LineNumberRestartFormat;
+    readonly restart?: (typeof LineNumberRestartFormat)[keyof typeof LineNumberRestartFormat];
     readonly distance?: number | PositiveUniversalMeasure;
-}
+};
 
-export class LineNumberType extends XmlComponent {
-    public constructor({ countBy, start, restart, distance }: ILineNumberAttributes) {
-        super("w:lnNumType");
-        this.root.push(
-            new NextAttributeComponent<{
-                readonly countBy?: number;
-                readonly start?: number;
-                readonly restart?: LineNumberRestartFormat;
-                readonly distance?: number | PositiveUniversalMeasure;
-            }>({
-                countBy: { key: "w:countBy", value: countBy === undefined ? undefined : decimalNumber(countBy) },
-                start: { key: "w:start", value: start === undefined ? undefined : decimalNumber(start) },
-                restart: { key: "w:restart", value: restart },
-                distance: { key: "w:distance", value: distance === undefined ? undefined : twipsMeasureValue(distance) },
-            }),
-        );
-    }
-}
+export const createLineNumberType = ({ countBy, start, restart, distance }: ILineNumberAttributes): XmlComponent =>
+    new BuilderElement<ILineNumberAttributes>({
+        name: "w:lnNumType",
+        attributes: {
+            countBy: { key: "w:countBy", value: countBy === undefined ? undefined : decimalNumber(countBy) },
+            start: { key: "w:start", value: start === undefined ? undefined : decimalNumber(start) },
+            restart: { key: "w:restart", value: restart },
+            distance: {
+                key: "w:distance",
+                value: distance === undefined ? undefined : twipsMeasureValue(distance),
+            },
+        },
+    });

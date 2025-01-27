@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
 
@@ -109,6 +109,91 @@ describe("Settings", () => {
                         },
                     },
                 ],
+            });
+        });
+
+        it("should add defaultTabStop setting with version", () => {
+            const settings = new Settings({
+                defaultTabStop: 100,
+            });
+
+            const tree = new Formatter().format(settings);
+            expect(Object.keys(tree)).has.length(1);
+            expect(tree["w:settings"]).to.be.an("array");
+            expect(tree["w:settings"]).to.deep.include({
+                "w:defaultTabStop": {
+                    _attr: {
+                        "w:val": 100,
+                    },
+                },
+            });
+        });
+
+        it("should add autoHyphenation setting", () => {
+            const options = {
+                hyphenation: {
+                    autoHyphenation: true,
+                },
+            };
+
+            const tree = new Formatter().format(new Settings(options));
+            expect(Object.keys(tree)).has.length(1);
+            expect(tree["w:settings"]).to.be.an("array");
+            expect(tree["w:settings"]).to.deep.include({
+                "w:autoHyphenation": {},
+            });
+        });
+
+        it("should add doNotHyphenateCaps setting", () => {
+            const options = {
+                hyphenation: {
+                    doNotHyphenateCaps: true,
+                },
+            };
+
+            const tree = new Formatter().format(new Settings(options));
+            expect(Object.keys(tree)).has.length(1);
+            expect(tree["w:settings"]).to.be.an("array");
+            expect(tree["w:settings"]).to.deep.include({
+                "w:doNotHyphenateCaps": {},
+            });
+        });
+
+        it("should add hyphenationZone setting", () => {
+            const options = {
+                hyphenation: {
+                    hyphenationZone: 200,
+                },
+            };
+
+            const tree = new Formatter().format(new Settings(options));
+            expect(Object.keys(tree)).has.length(1);
+            expect(tree["w:settings"]).to.be.an("array");
+            expect(tree["w:settings"]).to.deep.include({
+                "w:hyphenationZone": {
+                    _attr: {
+                        "w:val": 200,
+                    },
+                },
+            });
+        });
+
+        it("should add consecutiveHyphenLimit setting", () => {
+            const options = {
+                hyphenation: {
+                    consecutiveHyphenLimit: 3,
+                },
+            };
+
+            const tree = new Formatter().format(new Settings(options));
+            expect(Object.keys(tree)).has.length(1);
+            expect(tree["w:settings"]).to.be.an("array");
+            expect(tree["w:settings"]).to.deep.include({
+                "w:consecutiveHyphenLimit": {
+                    _attr: {
+                        "w:val": 3,
+                    },
+                },
             });
         });
 

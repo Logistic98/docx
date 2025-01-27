@@ -17,17 +17,18 @@ import { decimalNumber } from "@util/values";
 //     <xsd:attribute name="charSpace" type="ST_DecimalNumber"/>
 // </xsd:complexType>
 
-export enum DocumentGridType {
-    DEFAULT = "default",
-    LINES = "lines",
-    LINES_AND_CHARS = "linesAndChars",
-    SNAP_TO_CHARS = "snapToChars",
-}
-export interface IDocGridAttributesProperties {
-    readonly type?: DocumentGridType;
+export const DocumentGridType = {
+    DEFAULT: "default",
+    LINES: "lines",
+    LINES_AND_CHARS: "linesAndChars",
+    SNAP_TO_CHARS: "snapToChars",
+} as const;
+
+export type IDocGridAttributesProperties = {
+    readonly type?: (typeof DocumentGridType)[keyof typeof DocumentGridType];
     readonly linePitch?: number;
     readonly charSpace?: number;
-}
+};
 
 export class DocGridAttributes extends XmlAttributeComponent<IDocGridAttributesProperties> {
     protected readonly xmlKeys = {
@@ -38,7 +39,7 @@ export class DocGridAttributes extends XmlAttributeComponent<IDocGridAttributesP
 }
 
 export class DocumentGrid extends XmlComponent {
-    public constructor(linePitch: number, charSpace?: number, type?: DocumentGridType) {
+    public constructor(linePitch: number, charSpace?: number, type?: (typeof DocumentGridType)[keyof typeof DocumentGridType]) {
         super("w:docGrid");
 
         this.root.push(

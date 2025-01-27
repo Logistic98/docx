@@ -11,10 +11,10 @@ import { TextAttributes } from "../text-attributes";
 //     </xsd:simpleContent>
 // </xsd:complexType>
 
-interface ITextOptions {
-    readonly space?: SpaceType;
+type ITextOptions = {
+    readonly space?: (typeof SpaceType)[keyof typeof SpaceType];
     readonly text?: string;
-}
+};
 
 export class Text extends XmlComponent {
     public constructor(options: string | ITextOptions) {
@@ -23,11 +23,9 @@ export class Text extends XmlComponent {
         if (typeof options === "string") {
             this.root.push(new TextAttributes({ space: SpaceType.PRESERVE }));
             this.root.push(options);
-            return this;
         } else {
             this.root.push(new TextAttributes({ space: options.space ?? SpaceType.DEFAULT }));
             this.root.push(options.text);
-            return this;
         }
     }
 }

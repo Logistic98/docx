@@ -1,11 +1,10 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
 import { BorderStyle } from "@file/border";
 import { VerticalAlign } from "@file/vertical-align";
 
 import { WidthType } from "../table-width";
-
 import { VerticalMergeType } from "./table-cell-components";
 import { TableCellProperties } from "./table-cell-properties";
 

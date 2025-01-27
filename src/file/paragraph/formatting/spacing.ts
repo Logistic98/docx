@@ -1,20 +1,21 @@
 // http://officeopenxml.com/WPspacing.php
 import { XmlAttributeComponent, XmlComponent } from "@file/xml-components";
 
-export enum LineRuleType {
-    AT_LEAST = "atLeast",
-    EXACTLY = "exactly",
-    EXACT = "exact",
-    AUTO = "auto",
-}
-export interface ISpacingProperties {
+export const LineRuleType = {
+    AT_LEAST: "atLeast",
+    EXACTLY: "exactly",
+    EXACT: "exact",
+    AUTO: "auto",
+} as const;
+
+export type ISpacingProperties = {
     readonly after?: number;
     readonly before?: number;
     readonly line?: number;
-    readonly lineRule?: LineRuleType;
+    readonly lineRule?: (typeof LineRuleType)[keyof typeof LineRuleType];
     readonly beforeAutoSpacing?: boolean;
     readonly afterAutoSpacing?: boolean;
-}
+};
 
 class SpacingAttributes extends XmlAttributeComponent<ISpacingProperties> {
     protected readonly xmlKeys = {
@@ -22,6 +23,8 @@ class SpacingAttributes extends XmlAttributeComponent<ISpacingProperties> {
         before: "w:before",
         line: "w:line",
         lineRule: "w:lineRule",
+        beforeAutoSpacing: "w:beforeAutospacing",
+        afterAutoSpacing: "w:afterAutoSpacing",
     };
 }
 

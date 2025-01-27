@@ -4,16 +4,17 @@ import { XmlComponent } from "@file/xml-components";
 import { FootnoteAttributes } from "./footnote-attributes";
 import { FootnoteRefRun } from "./run/footnote-ref-run";
 
-export enum FootnoteType {
-    SEPERATOR = "separator",
-    CONTINUATION_SEPERATOR = "continuationSeparator",
-}
+export const FootnoteType = {
+    SEPERATOR: "separator",
 
-export interface IFootnoteOptions {
+    CONTINUATION_SEPERATOR: "continuationSeparator",
+} as const;
+
+export type IFootnoteOptions = {
     readonly id: number;
-    readonly type?: FootnoteType;
+    readonly type?: (typeof FootnoteType)[keyof typeof FootnoteType];
     readonly children: readonly Paragraph[];
-}
+};
 
 export class Footnote extends XmlComponent {
     public constructor(options: IFootnoteOptions) {

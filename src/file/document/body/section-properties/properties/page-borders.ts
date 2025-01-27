@@ -9,11 +9,12 @@ import { IgnoreIfEmptyXmlComponent, XmlAttributeComponent } from "@file/xml-comp
 //   <xsd:enumeration value="notFirstPage"/>
 // </xsd:restriction>
 // </xsd:simpleType>
-export enum PageBorderDisplay {
-    ALL_PAGES = "allPages",
-    FIRST_PAGE = "firstPage",
-    NOT_FIRST_PAGE = "notFirstPage",
-}
+
+export const PageBorderDisplay = {
+    ALL_PAGES: "allPages",
+    FIRST_PAGE: "firstPage",
+    NOT_FIRST_PAGE: "notFirstPage",
+} as const;
 
 // <xsd:simpleType name="ST_PageBorderOffset">
 // <xsd:restriction base="xsd:string">
@@ -21,10 +22,10 @@ export enum PageBorderDisplay {
 //   <xsd:enumeration value="text"/>
 // </xsd:restriction>
 // </xsd:simpleType>
-export enum PageBorderOffsetFrom {
-    PAGE = "page",
-    TEXT = "text",
-}
+export const PageBorderOffsetFrom = {
+    PAGE: "page",
+    TEXT: "text",
+} as const;
 
 // <xsd:simpleType name="ST_PageBorderZOrder">
 // <xsd:restriction base="xsd:string">
@@ -32,24 +33,24 @@ export enum PageBorderOffsetFrom {
 //   <xsd:enumeration value="back"/>
 // </xsd:restriction>
 // </xsd:simpleType>
-export enum PageBorderZOrder {
-    BACK = "back",
-    FRONT = "front",
-}
+export const PageBorderZOrder = {
+    BACK: "back",
+    FRONT: "front",
+} as const;
 
-export interface IPageBorderAttributes {
-    readonly display?: PageBorderDisplay;
-    readonly offsetFrom?: PageBorderOffsetFrom;
-    readonly zOrder?: PageBorderZOrder;
-}
+export type IPageBorderAttributes = {
+    readonly display?: (typeof PageBorderDisplay)[keyof typeof PageBorderDisplay];
+    readonly offsetFrom?: (typeof PageBorderOffsetFrom)[keyof typeof PageBorderOffsetFrom];
+    readonly zOrder?: (typeof PageBorderZOrder)[keyof typeof PageBorderZOrder];
+};
 
-export interface IPageBordersOptions {
+export type IPageBordersOptions = {
     readonly pageBorders?: IPageBorderAttributes;
     readonly pageBorderTop?: IBorderOptions;
     readonly pageBorderRight?: IBorderOptions;
     readonly pageBorderBottom?: IBorderOptions;
     readonly pageBorderLeft?: IBorderOptions;
-}
+};
 
 class PageBordersAttributes extends XmlAttributeComponent<IPageBorderAttributes> {
     protected readonly xmlKeys = {

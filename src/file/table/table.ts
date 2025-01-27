@@ -20,19 +20,19 @@ import { ITableWidthProperties } from "./table-width";
     table will make it look reasonable, as the layout
     algorithm will expand columns to fit its content
  */
-export interface ITableOptions {
+export type ITableOptions = {
     readonly rows: readonly TableRow[];
     readonly width?: ITableWidthProperties;
     readonly columnWidths?: readonly number[];
     readonly margins?: ITableCellMarginOptions;
     readonly indent?: ITableWidthProperties;
     readonly float?: ITableFloatOptions;
-    readonly layout?: TableLayoutType;
+    readonly layout?: (typeof TableLayoutType)[keyof typeof TableLayoutType];
     readonly style?: string;
     readonly borders?: ITableBordersOptions;
-    readonly alignment?: AlignmentType;
+    readonly alignment?: (typeof AlignmentType)[keyof typeof AlignmentType];
     readonly visuallyRightToLeft?: boolean;
-}
+};
 
 export class Table extends FileChild {
     public constructor({

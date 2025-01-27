@@ -1,20 +1,10 @@
-import { expect } from "chai";
-import { SinonStub, stub } from "sinon";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
-import * as convenienceFunctions from "@util/convenience-functions";
 
 import { Numbering } from "./numbering";
 
 describe("Numbering", () => {
-    before(() => {
-        stub(convenienceFunctions, "uniqueNumericId").callsFake(() => 0);
-    });
-
-    after(() => {
-        (convenienceFunctions.uniqueNumericId as SinonStub).restore();
-    });
-
     describe("#constructor", () => {
         it("creates a default numbering with one abstract and one concrete instance", () => {
             const numbering = new Numbering({
@@ -23,10 +13,11 @@ describe("Numbering", () => {
 
             const tree = new Formatter().format(numbering);
             expect(Object.keys(tree)).to.deep.equal(["w:numbering"]);
-            const abstractNums = tree["w:numbering"].filter((el) => el["w:abstractNum"]);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const abstractNums: readonly any[] = tree["w:numbering"].filter((el: any) => el["w:abstractNum"]);
             expect(abstractNums).to.have.lengthOf(1);
             expect(abstractNums[0]["w:abstractNum"]).to.deep.include.members([
-                { _attr: { "w:abstractNumId": 0, "w15:restartNumberingAfterBreak": 0 } },
+                { _attr: { "w:abstractNumId": 1, "w15:restartNumberingAfterBreak": 0 } },
                 { "w:multiLevelType": { _attr: { "w:val": "hybridMultilevel" } } },
             ]);
 

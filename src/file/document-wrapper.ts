@@ -3,11 +3,12 @@ import { Footer } from "./footer/footer";
 import { FootNotes } from "./footnotes";
 import { Header } from "./header/header";
 import { Relationships } from "./relationships";
+import { XmlComponent } from "./xml-components";
 
-export interface IViewWrapper {
-    readonly View: Document | Footer | Header | FootNotes;
+export type IViewWrapper = {
+    readonly View: Document | Footer | Header | FootNotes | XmlComponent;
     readonly Relationships: Relationships;
-}
+};
 
 export class DocumentWrapper implements IViewWrapper {
     private readonly document: Document;

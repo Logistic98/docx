@@ -1,37 +1,61 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import fs from "fs";
-import prompt from "prompt";
-import shelljs from "shelljs";
+import path from "path";
+import inquirer from "inquirer";
+import { $ } from "execa";
 
-console.log("What demo do you wish to run? (Enter a number)");
-
-const schema = {
-    properties: {
-        number: {
-            pattern: /^[0-9]+$/,
-            message: "Please enter a number.",
-            required: true,
-        },
-    },
+export type Answers = {
+    readonly type: "list" | "number";
+    readonly demoNumber?: number;
+    readonly demoFile?: number;
 };
 
-prompt.start();
+const dir = "./demo";
+const fileNames = fs.readdirSync(dir);
 
-prompt.get(schema as any, (_, result) => {
-    const demoNumber = result.number as string;
-    const files = fs.readdirSync("./demo").filter((fn) => fn.startsWith(demoNumber));
+const keys = fileNames.map((f) => path.parse(f).name);
+const getFileNumber = (file: string): number => {
+    const [firstPart] = file.split("-");
 
-    if (files.length === 0) {
-        console.error(`demo number ${demoNumber} does not exist`);
-        return;
-    }
+    return Number(firstPart);
+};
 
-    const filePath = `./demo/${files[0]}`;
+const demoFiles = keys.filter((file) => !isNaN(getFileNumber(file))).sort((a, b) => getFileNumber(a) - getFileNumber(b));
+
+const answers = await inquirer.prompt<Answers>([
+    {
+        type: "list",
+        name: "type",
+        message: "Select demo from a list or via number",
+        choices: ["list", "number"],
+    },
+    {
+        type: "list",
+        name: "demoFile",
+        message: "What demo do you wish to run?",
+        choices: demoFiles,
+        filter: (input) => parseInt(input.split("-")[0], 10),
+        when: (a) => a.type === "list",
+    },
+    {
+        type: "number",
+        name: "demoNumber",
+        message: "What demo do you wish to run? (Enter a number)",
+        default: 1,
+        when: (a) => a.type === "number",
+    },
+]);
+
+const demoNumber = answers.demoNumber ?? answers.demoFile ?? 1;
+const files = fs.readdirSync(dir).filter((fn) => fn.startsWith(demoNumber.toString()));
+
+if (files.length === 0) {
+    console.error(`demo number ${demoNumber} does not exist`);
+} else {
+    const filePath = path.join(dir, files[0]);
 
     console.log(`Running demo ${demoNumber}: ${files[0]}`);
-    if (shelljs.exec(`npm run ts-node -- ${filePath}`).code === 0) {
-        console.log("Document created successfully");
-    } else {
-        console.error("Something went wrong with the demo");
-    }
-});
+    const { stdout } = await $`tsx ${filePath}`;
+    console.log(stdout);
+    console.log("Successfully created document!");
+}

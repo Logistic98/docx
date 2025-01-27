@@ -1,6 +1,7 @@
-import { expect } from "chai";
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
+
 import { Attributes, BaseXmlComponent, XmlComponent } from "./";
 
 class TestComponent extends XmlComponent {
@@ -20,11 +21,13 @@ describe("XmlComponent", () => {
         });
         it("should handle children elements", () => {
             const xmlComponent = new TestComponent("w:test");
+
             xmlComponent.push(
                 new Attributes({
                     val: "test",
                 }),
             );
+
             xmlComponent.push(new TestComponent("innerTest"));
 
             const tree = new Formatter().format(xmlComponent);
@@ -43,6 +46,7 @@ describe("XmlComponent", () => {
         });
         it("should hoist attrs if only attrs are present", () => {
             const xmlComponent = new TestComponent("w:test");
+
             xmlComponent.push(
                 new Attributes({
                     val: "test",

@@ -1,13 +1,12 @@
-/* tslint:disable:no-unused-expression */
-import { expect } from "chai";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, expect, it } from "vitest";
 
 import { Formatter } from "@export/formatter";
 
 import { AlignmentType, Paragraph } from "../paragraph";
 import { Table } from "./table";
-import { RelativeHorizontalPosition, RelativeVerticalPosition, TableAnchorType } from "./table-properties";
-
 import { TableCell } from "./table-cell";
+import { RelativeHorizontalPosition, RelativeVerticalPosition, TableAnchorType } from "./table-properties";
 import { TableLayoutType } from "./table-properties/table-layout";
 import { TableRow } from "./table-row";
 import { WidthType } from "./table-width";
@@ -344,10 +343,10 @@ describe("Table", () => {
                 });
                 const tree = new Formatter().format(table);
                 expect(tree).to.have.property("w:tbl").which.is.an("array");
-                const row = tree["w:tbl"].find((x) => x["w:tr"]);
+                const row = tree["w:tbl"].find((x: any) => x["w:tr"]);
                 expect(row).not.to.be.undefined;
                 expect(row["w:tr"]).to.be.an("array").which.has.length.at.least(1);
-                expect(row["w:tr"].find((x) => x["w:tc"])).to.deep.equal({
+                expect(row["w:tr"].find((x: any) => x["w:tc"])).to.deep.equal({
                     "w:tc": [
                         {
                             "w:p": [
